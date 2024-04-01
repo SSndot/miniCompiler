@@ -167,7 +167,7 @@ class Exp:public AST{
 public:
     unique_ptr<LOrExp> lorexp;
     void MyPrint(int indent)const override;
-    int getValue();
+
 };
 
 class LVal:public AST{
@@ -177,7 +177,7 @@ public:
     string ident;
     vector<unique_ptr<Exp>> exps;
     void MyPrint(int indent)const override;
-    int getValue();
+
     
 };
 
@@ -190,7 +190,7 @@ public:
     unique_ptr<LVal> lval;
     unique_ptr<Number> number;
     void MyPrint(int indent)const override;
-    int getValue();
+  
 
 };
 class Number:public AST{
@@ -210,7 +210,6 @@ public:
     unique_ptr<UnaryOp> unaryop;
     unique_ptr<UnaryExp> unaryexp;
     void MyPrint(int indent)const override;
-    int getValue();
 
 };
 
@@ -235,7 +234,7 @@ public:
     unique_ptr<MulExp> mulexp;
     char op;
     void MyPrint(int indent)const override;
-    int getValue();
+
 };
 
 //加减表达式
@@ -247,7 +246,7 @@ public:
     unique_ptr<AddExp>addexp;
     char op;
     void MyPrint(int indent)const override;
-    int getValue();
+
 };
 //关系表达式
 class RelExp:public AST{
@@ -258,7 +257,7 @@ public:
     unique_ptr<RelExp>relexp;
     char op[2];
     void MyPrint(int indent)const override;
-    int getValue();
+  
 };
 
 //相等性表达式
@@ -270,7 +269,7 @@ public:
     unique_ptr<EqExp> eqexp;
     char op[2];
     void MyPrint(int indent)const override;
-    int getValue();
+   
 };
 
 class LAndExp:public AST{
@@ -280,7 +279,7 @@ public:
     unique_ptr<EqExp> eqexp;
     unique_ptr<LAndExp> landexp;
     void MyPrint(int indent)const override;
-    int getValue();
+  
 };
 
 //逻辑或表达式
@@ -291,7 +290,7 @@ public:
     unique_ptr<LAndExp> landexp;
     unique_ptr<LOrExp> lorexp;
     void MyPrint(int indent)const override;
-    int getValue();
+
 };
 
 
