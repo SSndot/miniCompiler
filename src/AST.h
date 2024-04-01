@@ -47,7 +47,7 @@ public:
 //编译单元
 class CompUnit:public AST{
 public:
-    vector<unique_ptr<Decl>> Decls;
+    vector<unique_ptr<Decl>> decls;
     vector<unique_ptr<FuncDef>> funcdefs;
     void MyPrint(int indent)const override;
 

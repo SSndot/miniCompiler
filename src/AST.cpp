@@ -16,7 +16,7 @@ void printIndent(int level) {
 
 void CompUnit::MyPrint(int indent) const {
     cout << "CompUnit {\n";
-    for (const auto& decl : Decls) {
+    for (const auto& decl : decls) {
         decl->MyPrint(1); // 增加缩进
     }
     for (const auto& func : funcdefs) {
