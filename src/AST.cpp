@@ -303,7 +303,7 @@ void EqExp::MyPrint(int indent)const{
 
 void LAndExp::MyPrint(int indent)const{
     if(tag==EQEXP){
-        eqexp->MyPrint(int indent);
+        eqexp->MyPrint(indent);
     }
     else{
         printIndent(indent);
@@ -315,12 +315,12 @@ void LAndExp::MyPrint(int indent)const{
 
 void LOrExp::MyPrint(int indent)const{
     if(tag==LANDEXP){
-        landexp->MyPrint(int indent);
+        landexp->MyPrint(indent);
     }
     else{
         printIndent(indent);
         cout<<"LAND_OP: &&\n";
         landexp->MyPrint(indent+1);
-        eqexp->MyPrint(indent+1);
+        lorexp->MyPrint(indent+1);
     }
 }

@@ -80,7 +80,7 @@ class VarDef:public AST{
 public:
     enum TAG {VARIABLE,ARRAY};
     TAG tag;
-    string:ident;
+    string ident;
     unique_ptr<InitVal> initval;//若为空说明没有初始值
     vector<int> int_consts;//数组各维度
     void MyPrint(int indent)const override;
@@ -239,7 +239,7 @@ public:
 };
 
 //加减表达式
-class AddExp:public ATS{
+class AddExp:public AST{
 public:
     enum TAG {MULEXP,ADD_MUL_EXP};
     TAG tag;
