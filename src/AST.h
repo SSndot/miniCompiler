@@ -44,6 +44,12 @@ public:
     virtual void MyPrint(int indent = 0) const = 0;
 };
 
+//数组
+class IntconstList :public AST{
+public:
+    vector<int> list;
+    void MyPrint(int indent) const override;
+};
 //编译单元
 class CompUnit:public AST{
 public:
@@ -82,7 +88,7 @@ public:
     TAG tag;
     string ident;
     unique_ptr<InitVal> initval;//若为空说明没有初始值
-    vector<int> int_consts;//数组各维度
+    unique_ptr<IntconstList> int_consts;
     void MyPrint(int indent)const override;
 };
 
@@ -125,7 +131,7 @@ public:
     TAG tag;
     unique_ptr<BType> btype;
     string ident;
-    vector <int> int_consts;
+    unique_ptr<IntconstList> int_consts;
     
     void MyPrint(int indent)const override;
 

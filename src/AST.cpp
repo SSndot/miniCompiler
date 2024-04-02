@@ -24,7 +24,17 @@ void CompUnit::MyPrint(int indent) const {
     }
     cout<<"}\n";
 }
-
+void IntconstList::MyPrint(int indent)const{
+  if (list.empty()) {
+                cout << "[]\n"; // 输出占位符
+        } else {
+            // 遍历并为每个维度打印[]
+            for (size_t i = 0; i < list.size(); ++i) {
+                cout << "[" << list[i] << "]";
+            }
+            cout<<"\n";
+        }
+}
 void Decl::MyPrint(int indent) const{
     vardecl->MyPrint(indent);
 }
@@ -54,10 +64,7 @@ void VarDef::MyPrint(int indent) const {
     }
     else{
         cout<<"ARRAY "<<ident;
-        for (size_t i = 0; i < int_consts.size(); ++i) {
-            cout << "[" <<int_consts[i]<<"]";
-        }
-        cout<<"\n";
+        int_consts->MyPrint(indent);
     }
 }
 
@@ -103,15 +110,8 @@ void FuncFParam::MyPrint(int indent) const {
     }
     else{
         cout<<"ARRAY "<<ident;
-        if (int_consts.empty()) {
-                cout << "[]\n"; // 输出占位符
-        } else {
-            // 遍历并为每个维度打印[]
-            for (size_t i = 0; i < int_consts.size(); ++i) {
-                cout << "[" << int_consts[i] << "]";
-            }
-            cout<<"\n";
-        }
+        int_consts->MyPrint(indent);
+      
     }
  
 }
