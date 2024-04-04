@@ -18,7 +18,7 @@ using namespace std;
 
 %}
 
-%parser-param {std::unique_ptr<AST>& ast}
+%parse-param {std::unique_ptr<AST>& ast}
 
 %union {
     int int_val;
@@ -29,7 +29,7 @@ using namespace std;
 %token VOID INT RETURN LESS_EQ GREAT_EQ EQUAL NOT_EQUAL AND OR IF ELSE WHILE BREAK CONTINUE
 %token <str_val> IDENT
 %token <int_val> INT_CONST
-%type <ast_val> CompUnit GlobalDef BType Decl VarDecl VarDefList VarDef IntConstList InitVal FuncDef FuncType FuncFParams FuncFParamList FuncFParam Block BlockItemList BlockItem Stmt Exp LVal ExpList PrimaryExp Number UnaryExp UnaryOp FuncRParams ExpIter MulExp AddExp RelExp EqExp LAndExp LOrExp
+%type <ast_val> CompUnit GlobalDef Decl VarDecl VarDefList VarDef IntConstList InitVal FuncDef FuncType FuncFParams FuncFParamList FuncFParam Block BlockItemList BlockItem Stmt Exp LVal ExpList PrimaryExp Number UnaryExp UnaryOp FuncRParams ExpIter MulExp AddExp RelExp EqExp LAndExp LOrExp BType
 %%
 
 CompUnit : GlobalDef {
@@ -46,7 +46,7 @@ GlobalDef : GlobalDef Decl {
     for(auto &it : comp_units_it->funcdefs){
         comp_unit->funcdefs.emplace_back(it.release());
     }
-    comp_unit.emplace_back((Decl*) $2);
+    comp_unit->decls.emplace_back((Decl*) $2);
     $$ = comp_unit;
 } | GlobalDef FuncDef {
     auto comp_unit = new CompUnit();
@@ -57,15 +57,15 @@ GlobalDef : GlobalDef Decl {
     for(auto &it : comp_units_it->funcdefs){
         comp_unit->funcdefs.emplace_back(it.release());
     }
-    comp_unit.emplace_back((FuncDef*) $2);
+    comp_unit->funcdefs.emplace_back((FuncDef*) $2);
     $$ = comp_unit;
 } | Decl {
     auto comp_unit = new CompUnit();
-    comp_unit.emplace_back((Decl*) $1);
+    comp_unit->decls.emplace_back((Decl*) $1);
     $$ = comp_unit;
 } | FuncDef {
     auto comp_unit = new CompUnit();
-    comp_unit.emplace_back((FuncDef*) $1);
+    comp_unit->funcdefs.emplace_back((FuncDef*) $1);
     $$ = comp_unit;
 };
 
@@ -111,22 +111,19 @@ VarDef : IDENT '=' InitVal {
     $$ = var_def;
 } | IDENT IntConstList {
     auto var_def = new VarDef();
-    auto int_const_list = unique_ptr<VarDef>((VarDef*) $2);
     var_def->tag = VarDef::ARRAY;
     var_def->ident = *unique_ptr<string>($1);
-    for(auto &it : int_const_list->int_consts){
-        var_def->int_consts.emplace_back(it.release());
-    }
+    var_def->int_consts = unique_ptr<IntConstList>((IntConstList*) $2);
     $$ = var_def;
 };
 
 // {'[' INT_CONST ']'}
 IntConstList : '[' INT_CONST ']' IntConstList {
-    auto int_const_list = new VarDef();
+    auto int_const_list = new IntConstList();
     auto int_const_list_it = unique_ptr<IntConstList>((IntConstList*) $4);
-    int_const_list->int_consts.emplace_back((int) $2);
-    for(auto &it : int_const_list_it->list){
-        int_const_list->int_consts.emplace_back(it);
+    int_const_list->list.emplace_back((int) $2);
+    for(int i = 0; i < int_const_list_it->list.size(); ++i){
+        int_const_list->list.emplace_back(int_const_list_it->list[i]);
     }
     $$ = int_const_list;
 } | %empty {
@@ -155,11 +152,11 @@ FuncDef : FuncType IDENT '(' ')' Block {
 
 FuncType : VOID {
     auto func_type = new FuncType();
-    func_type->TAG = FuncType::VOID;
+    func_type->tag = FuncType::VOID;
     $$ = func_type;
 } | INT {
     auto func_type = new FuncType();
-    func_type->TAG = FuncType::INT;
+    func_type->tag = FuncType::INT;
     $$ = func_type;    
 };
 
@@ -167,7 +164,7 @@ FuncFParams : FuncFParam FuncFParamList {
     auto func_f_params = new FuncFParams();
     auto func_f_param_list = unique_ptr<FuncFParams>((FuncFParams*) $2);
     func_f_params->funcfparams.emplace_back((FuncFParam*) $1);
-    for(auto &it : func_f_params_list->funcfparams){
+    for(auto &it : func_f_param_list->funcfparams){
         func_f_params->funcfparams.emplace_back(it.release());
     }
     $$ = func_f_params;
@@ -187,18 +184,15 @@ FuncFParamList : ',' FuncFParam FuncFParamList {
 FuncFParam : BType IDENT {
     auto func_f_param = new FuncFParam();
     func_f_param->tag = FuncFParam::VARIABLE;
-    func_f_param->btype = unique_ptr<Btype>((BType*) $1);
+    func_f_param->btype = unique_ptr<BType>((BType*) $1);
     func_f_param->ident = *unique_ptr<string>($2);
     $$ = func_f_param;
 } | BType IDENT '[' ']' IntConstList {
     auto func_f_param = new FuncFParam();
-    auto int_const_list = unique_ptr<IntConstList>((IntConstList*) $5);
     func_f_param->tag = FuncFParam::ARRAY;
-    func_f_param->btype = unique_ptr<Btype>((BType*) $1);
+    func_f_param->btype = unique_ptr<BType>((BType*) $1);
     func_f_param->ident = *unique_ptr<string>($2);
-    for(auto &it : int_const_list->list){
-        func_f_param->int_consts.emplace_back(it);
-    }
+    func_f_param->int_consts = unique_ptr<IntConstList>((IntConstList*) $5);
     $$ = func_f_param;    
 };
 
@@ -214,7 +208,7 @@ Block : '{' BlockItemList '}' {
 BlockItemList : BlockItem BlockItemList {
     auto block_item_list = new Block();
     auto block_item_list_it = unique_ptr<Block>((Block*) $2);
-    block_item_list.emplace_back((BlockItem*) $1);
+    block_item_list->blockitems.emplace_back((BlockItem*) $1);
     for(auto &it : block_item_list_it->blockitems){
         block_item_list->blockitems.emplace_back(it.release());
     }
@@ -237,13 +231,13 @@ BlockItem : Decl {
 Stmt : LVal '=' Exp ';'{
     auto stmt = new Stmt();
     stmt->tag = Stmt::ASSIGN;
-    stmt->lval = unique_str<LVal>((LVal*) $1);
-    stmt->exp = unique_str<Exp>((Exp*) $3);
+    stmt->lval = unique_ptr<LVal>((LVal*) $1);
+    stmt->exp = unique_ptr<Exp>((Exp*) $3);
     $$ = stmt;
 } | Exp ';' {
     auto stmt = new Stmt();
     stmt->tag = Stmt::EXP;
-    stmt->exp = unique_str<Exp>((Exp*) $1);
+    stmt->exp = unique_ptr<Exp>((Exp*) $1);
     $$ = stmt;
 } | Block {
     auto stmt = new Stmt();
@@ -325,7 +319,7 @@ ExpList : '[' Exp ']' ExpList {
 
 PrimaryExp : '(' Exp ')'{
     auto primary_exp = new PrimaryExp();
-    primary_exp->tag = PrimaryExp::Exp;
+    primary_exp->tag = PrimaryExp::EXP;
     primary_exp->exp = unique_ptr<Exp>((Exp*) $2);
     $$ = primary_exp;
 } | LVal {
@@ -362,7 +356,7 @@ UnaryExp : PrimaryExp {
     unary_exp->ident = *unique_ptr<string>($1);
     unary_exp->funcrparams = unique_ptr<FuncRParams>((FuncRParams*) $3);
     $$ = unary_exp;
-} UnaryOp UnaryExp {
+} | UnaryOp UnaryExp {
     auto unary_exp = new UnaryExp();
     unary_exp->tag = UnaryExp::OP_EXP;
     unary_exp->unaryop = unique_ptr<UnaryOp>((UnaryOp*) $1);
@@ -533,7 +527,7 @@ LAndExp : EqExp {
 LOrExp : LAndExp {
     auto l_or_exp = new LOrExp();
     l_or_exp->tag = LOrExp::LANDEXP;
-    l_or_exp->landexp = unique_ptr<LAndExp>((LandExp*) $1);
+    l_or_exp->landexp = unique_ptr<LAndExp>((LAndExp*) $1);
     $$ = l_or_exp;
 } | LOrExp OR LAndExp {
     auto l_or_exp = new LOrExp();
@@ -542,5 +536,11 @@ LOrExp : LAndExp {
     l_or_exp->lorexp = unique_ptr<LOrExp>((LOrExp*) $1);
     $$ = l_or_exp;
 };
+
+%%
+
+void yyerror(unique_ptr<AST> &ast, const char *s) {
+    cerr << "error: " << s << endl;
+}
 
 
