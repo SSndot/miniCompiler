@@ -26,13 +26,10 @@ using namespace std;
     AST* ast_val;
 }
 
-%nonassoc LOWER_THAN_ELSE
-%nonassoc ELSE
-
-%token INT VOID RETURN LESS_EQ GREAT_EQ EQUAL NOT_EQUAL AND OR IF WHILE BREAK CONTINUE
+%token INT VOID RETURN LESS_EQ GREAT_EQ EQUAL NOT_EQUAL AND OR IF ELSE WHILE BREAK CONTINUE
 %token <str_val> IDENT
 %token <int_val> INT_CONST
-%type <ast_val> CompUnit GlobalDef Decl VarDecl VarDefList VarDef IntConstList InitVal FuncDef FuncFParams FuncFParamList FuncFParam Block BlockItemList BlockItem Stmt Exp LVal ExpList PrimaryExp Number UnaryExp UnaryOp FuncRParams ExpIter MulExp AddExp RelExp EqExp LAndExp LOrExp
+%type <ast_val> CompUnit GlobalDef Decl VarDecl VarDefList VarDef IntConstList InitVal FuncDef FuncFParams FuncFParamList FuncFParam Block BlockItemList BlockItem Stmt Match UnMatch OtherStmt Exp LVal ExpList PrimaryExp Number UnaryExp UnaryOp FuncRParams ExpIter MulExp AddExp RelExp EqExp LAndExp LOrExp
 %%
 
 CompUnit : GlobalDef {
@@ -252,7 +249,39 @@ BlockItem : Decl {
     $$ = block_item; 
 };
 
-Stmt : LVal '=' Exp ';'{
+Stmt : UnMatch {
+    $$ = $1;
+} | Match {
+    $$ = $1;
+};
+
+UnMatch : IF '(' Exp ')' Stmt {
+    auto stmt = new Stmt();
+    stmt->tag = Stmt::IF;
+    stmt->exp = unique_ptr<Exp>((Exp*) $3);
+    stmt->if_stmt = unique_ptr<Stmt>((Stmt*) $5);
+    $$ = stmt;
+} | IF '(' Exp ')' Match ELSE UnMatch {
+    auto stmt = new Stmt();
+    stmt->tag = Stmt::IF;
+    stmt->exp = unique_ptr<Exp>((Exp*) $3);
+    stmt->if_stmt = unique_ptr<Stmt>((Stmt*) $5);
+    stmt->else_stmt = unique_ptr<Stmt>((Stmt*) $7);    
+    $$ = stmt;    
+};
+
+Match : IF '(' Exp ')' Match ELSE Match {
+    auto stmt = new Stmt();
+    stmt->tag = Stmt::IF;
+    stmt->exp = unique_ptr<Exp>((Exp*) $3);
+    stmt->if_stmt = unique_ptr<Stmt>((Stmt*) $5);
+    stmt->else_stmt = unique_ptr<Stmt>((Stmt*) $7);    
+    $$ = stmt;  
+} | OtherStmt{
+    $$ = $1;
+};
+
+OtherStmt : LVal '=' Exp ';'{
     auto stmt = new Stmt();
     stmt->tag = Stmt::ASSIGN;
     stmt->lval = unique_ptr<LVal>((LVal*) $1);
@@ -268,19 +297,6 @@ Stmt : LVal '=' Exp ';'{
     stmt->tag = Stmt::BLOCK;
     stmt->block = unique_ptr<Block>((Block*) $1);
     $$ = stmt;
-} | IF '(' Exp ')' Stmt %prec LOWER_THAN_ELSE {
-    auto stmt = new Stmt();
-    stmt->tag = Stmt::IF;
-    stmt->exp = unique_ptr<Exp>((Exp*) $3);
-    stmt->if_stmt = unique_ptr<Stmt>((Stmt*) $5);
-    $$ = stmt;
-} | IF '(' Exp ')' Stmt ELSE Stmt {
-    auto stmt = new Stmt();
-    stmt->tag = Stmt::IF;
-    stmt->exp = unique_ptr<Exp>((Exp*) $3);
-    stmt->if_stmt = unique_ptr<Stmt>((Stmt*) $5);
-    stmt->else_stmt = unique_ptr<Stmt>((Stmt*) $7);    
-    $$ = stmt;    
 } | WHILE '(' Exp ')' Stmt {
     auto stmt = new Stmt();
     stmt->tag = Stmt::WHILE;
