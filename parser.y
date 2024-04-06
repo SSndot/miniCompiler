@@ -101,6 +101,8 @@ VarDefList : ',' VarDef VarDefList {
     }
     $$ = var_def_list;
 } | %empty {
+    auto var_def_list = new VarDecl();
+    $$ = var_def_list;
 };
 
 VarDef : IDENT '=' InitVal {
@@ -127,6 +129,8 @@ IntConstList : '[' INT_CONST ']' IntConstList {
     }
     $$ = int_const_list;
 } | %empty {
+    auto int_const_list = new IntConstList();
+    $$ = int_const_list;
 };
 
 InitVal : Exp {
@@ -192,6 +196,8 @@ FuncFParamList : ',' FuncFParam FuncFParamList {
     }
     $$ = func_f_param_list;
 } | %empty {
+    auto func_f_param_list = new FuncFParams();
+    $$ = func_f_param_list;
 };
 
 FuncFParam : INT IDENT {
@@ -227,6 +233,8 @@ BlockItemList : BlockItem BlockItemList {
     }
     $$ = block_item_list;
 } | %empty {
+    auto block_item_list = new Block();
+    $$ = block_item_list;
 };
 
 BlockItem : Decl {
@@ -328,6 +336,8 @@ ExpList : '[' Exp ']' ExpList {
     }
     $$ = exp_list;
 } | %empty {
+    auto exp_list = new LVal();
+    $$ = exp_list;
 };
 
 PrimaryExp : '(' Exp ')'{
@@ -411,6 +421,8 @@ ExpIter : ',' Exp ExpIter{
     }
     $$ = exp_iter;
 } | %empty {
+    auto exp_iter = new FuncRParams();
+    $$ = exp_iter;
 };
 
 MulExp : UnaryExp {

@@ -11,7 +11,7 @@
 using namespace std;
 
 void printIndent(int level) {
-    cout << string(level * 2, '     '); // 每层缩进两个空格
+    cout << string(level * 2, ' '); // 每层缩进两个空格
 }
 
 void CompUnit::MyPrint(int indent) const{
