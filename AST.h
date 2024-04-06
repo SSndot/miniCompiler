@@ -62,13 +62,13 @@ public:
 
 };
 
-//基本类型  只有int
-class BType:public AST{
-public:
-    enum TAG {INT};
-    TAG tag;
-    void MyPrint(int indent) const;
-};
+// //基本类型  只有int
+// class BType:public AST{
+// public:
+//     enum TAG {INT};
+//     TAG tag;
+//     void MyPrint(int indent) const;
+// };
 
 //声明
 class Decl:public AST{
@@ -80,7 +80,7 @@ public:
 class VarDecl:public AST{
 public:
     vector<unique_ptr<VarDef>> vardefs;
-    unique_ptr<BType> btype;
+    string btype;
     void MyPrint(int indent) const;
 };
 
@@ -106,19 +106,20 @@ public:
 //函数定义
 class FuncDef:public AST{
 public:
-    unique_ptr<FuncType> functype;
+    string functype;
     string ident;
     unique_ptr<FuncFParams> funcfparams;
     unique_ptr<Block> block;
     void MyPrint(int indent) const;
 };
-//函数类型
-class FuncType:public AST{
-public:
-    enum TAG{VOID,INT};
-    TAG tag;
-    void MyPrint(int indent) const;
-};
+
+// //函数类型
+// class FuncType:public AST{
+// public:
+//     enum TAG{VOID,INT};
+//     TAG tag;
+//     void MyPrint(int indent) const;
+// };
 
 
 //函数形参
@@ -132,7 +133,7 @@ class FuncFParam:public AST{
 public:
     enum TAG {VARIABLE, ARRAY};
     TAG tag;
-    unique_ptr<BType> btype;
+    string btype;
     string ident;
     unique_ptr<IntConstList> int_consts;
     
@@ -300,6 +301,4 @@ public:
     unique_ptr<LOrExp> lorexp;
     void MyPrint(int indent) const;
 };
-
-
 

@@ -38,17 +38,17 @@ void IntConstList::MyPrint(int indent) const{
 void Decl::MyPrint(int indent) const{
     vardecl->MyPrint(indent);
 }
-// BType的打印方法
-void BType::MyPrint(int indent) const{
-    printIndent(indent); // 假设BType总是从CompUnit开始的第一层
-    cout << "BType: " << (tag == INT ? "int" : "unknown") <<"  ";
-}
+
+// // BType的打印方法
+// void BType::MyPrint(int indent) const{
+//     printIndent(indent); // 假设BType总是从CompUnit开始的第一层
+//     cout << "BType: " << (tag == INT ? "int" : "unknown") <<"  ";
+// }
 
 // 变量定义
 void VarDecl::MyPrint(int indent) const{
     printIndent(indent);
     cout << "VarDecl:\n";
-   
     for (const auto& varDef : vardefs) {
         varDef->MyPrint(indent+1); // 增加缩进
     }
@@ -79,9 +79,10 @@ void FuncDef::MyPrint(int indent) const{
     printIndent(indent);
     cout << "FuncDef: {" << ident << "\n";
     // 假设FuncType总是从FuncDef开始的第一层
-    functype->MyPrint(indent+1);
+// TODO
+    // functype->MyPrint(indent+1);
     printIndent(indent+1);
-    cout<<ident<<"\n";
+    cout << ident << "\n";
     if (funcfparams) {
         funcfparams->MyPrint(indent+1);
     }
@@ -90,10 +91,10 @@ void FuncDef::MyPrint(int indent) const{
     cout<<"}\n";
 }
 
-void FuncType::MyPrint(int indent) const{
-    printIndent(indent);
-    cout << "FuncType: " << (tag == VOID ? "void" : "int") << "\n";
-}
+// void FuncType::MyPrint(int indent) const{
+//     printIndent(indent);
+//     cout << "FuncType: " << (tag == VOID ? "void" : "int") << "\n";
+// }
 
 void FuncFParams::MyPrint(int indent) const{
     printIndent(indent);
@@ -104,7 +105,7 @@ void FuncFParams::MyPrint(int indent) const{
 }
 
 void FuncFParam::MyPrint(int indent) const{
-    printIndent(indent);
+    printIndent(indent); 
     if(tag==VARIABLE){
         cout<<"VARIABLE "<<ident<<"\n";
     }

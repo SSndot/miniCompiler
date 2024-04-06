@@ -26,10 +26,10 @@ using namespace std;
     AST* ast_val;
 }
 
-%token VOID INT RETURN LESS_EQ GREAT_EQ EQUAL NOT_EQUAL AND OR IF ELSE WHILE BREAK CONTINUE
+%token INT VOID RETURN LESS_EQ GREAT_EQ EQUAL NOT_EQUAL AND OR IF ELSE WHILE BREAK CONTINUE
 %token <str_val> IDENT
 %token <int_val> INT_CONST
-%type <ast_val> CompUnit GlobalDef Decl VarDecl VarDefList VarDef IntConstList InitVal FuncDef FuncType FuncFParams FuncFParamList FuncFParam Block BlockItemList BlockItem Stmt Exp LVal ExpList PrimaryExp Number UnaryExp UnaryOp FuncRParams ExpIter MulExp AddExp RelExp EqExp LAndExp LOrExp BType
+%type <ast_val> CompUnit GlobalDef Decl VarDecl VarDefList VarDef IntConstList InitVal FuncDef FuncFParams FuncFParamList FuncFParam Block BlockItemList BlockItem Stmt Exp LVal ExpList PrimaryExp Number UnaryExp UnaryOp FuncRParams ExpIter MulExp AddExp RelExp EqExp LAndExp LOrExp
 %%
 
 CompUnit : GlobalDef {
@@ -69,11 +69,11 @@ GlobalDef : GlobalDef Decl {
     $$ = comp_unit;
 };
 
-BType : INT {
+/* BType : INT {
     auto btype = new BType();
     btype->tag = BType::INT;
     $$ = btype;    
-};
+}; */
 
 Decl : VarDecl {
     auto decl = new Decl();
@@ -81,10 +81,10 @@ Decl : VarDecl {
     $$ = decl;
 };
 
-VarDecl : BType VarDef VarDefList ';' {
+VarDecl : INT VarDef VarDefList ';' {
     auto var_decl = new VarDecl(); 
     auto var_def_list = unique_ptr<VarDecl>((VarDecl*) $3);
-    var_decl->btype = unique_ptr<BType>((BType*) $1);
+    var_decl->btype = (string)"int"; 
     var_decl->vardefs.emplace_back((VarDef*) $2);
     for(auto &it : var_def_list->vardefs){
         var_decl->vardefs.emplace_back(it.release());
@@ -135,22 +135,35 @@ InitVal : Exp {
     $$ = init_val;
 };
 
-FuncDef : FuncType IDENT '(' ')' Block {
+FuncDef : INT IDENT '(' ')' Block {
     auto func_def = new FuncDef();
-    func_def->functype = unique_ptr<FuncType>((FuncType*) $1);
+    func_def->functype = (string)"int";
     func_def->ident = *unique_ptr<string>($2);
     func_def->block = unique_ptr<Block>((Block*) $5);
     $$ = func_def;
-} | FuncType IDENT '(' FuncFParams ')' Block {
+} | VOID IDENT '(' ')' Block {
     auto func_def = new FuncDef();
-    func_def->functype = unique_ptr<FuncType>((FuncType*) $1);
+    func_def->functype = (string)"void";
+    func_def->ident = *unique_ptr<string>($2);
+    func_def->block = unique_ptr<Block>((Block*) $5);
+    $$ = func_def;
+} | INT IDENT '(' FuncFParams ')' Block {
+    auto func_def = new FuncDef();
+    func_def->functype = (string)"int";
+    func_def->ident = *unique_ptr<string>($2);
+    func_def->funcfparams = unique_ptr<FuncFParams>((FuncFParams*) $4);
+    func_def->block = unique_ptr<Block>((Block*) $6);
+    $$ = func_def;
+} | VOID IDENT '(' FuncFParams ')' Block {
+    auto func_def = new FuncDef();
+    func_def->functype = (string)"void";
     func_def->ident = *unique_ptr<string>($2);
     func_def->funcfparams = unique_ptr<FuncFParams>((FuncFParams*) $4);
     func_def->block = unique_ptr<Block>((Block*) $6);
     $$ = func_def;
 };
 
-FuncType : VOID {
+/* FuncType : VOID {
     auto func_type = new FuncType();
     func_type->tag = FuncType::VOID;
     $$ = func_type;
@@ -158,7 +171,7 @@ FuncType : VOID {
     auto func_type = new FuncType();
     func_type->tag = FuncType::INT;
     $$ = func_type;    
-};
+}; */
 
 FuncFParams : FuncFParam FuncFParamList {
     auto func_f_params = new FuncFParams();
@@ -181,16 +194,16 @@ FuncFParamList : ',' FuncFParam FuncFParamList {
 } | %empty {
 };
 
-FuncFParam : BType IDENT {
+FuncFParam : INT IDENT {
     auto func_f_param = new FuncFParam();
     func_f_param->tag = FuncFParam::VARIABLE;
-    func_f_param->btype = unique_ptr<BType>((BType*) $1);
+    func_f_param->btype = (string)"int";
     func_f_param->ident = *unique_ptr<string>($2);
     $$ = func_f_param;
-} | BType IDENT '[' ']' IntConstList {
+} | INT IDENT '[' ']' IntConstList {
     auto func_f_param = new FuncFParam();
     func_f_param->tag = FuncFParam::ARRAY;
-    func_f_param->btype = unique_ptr<BType>((BType*) $1);
+    func_f_param->btype = (string)"int";
     func_f_param->ident = *unique_ptr<string>($2);
     func_f_param->int_consts = unique_ptr<IntConstList>((IntConstList*) $5);
     $$ = func_f_param;    
