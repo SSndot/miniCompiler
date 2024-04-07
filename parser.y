@@ -447,21 +447,21 @@ MulExp : UnaryExp {
 } | MulExp '*' UnaryExp {
     auto mul_exp = new MulExp();
     mul_exp->tag = MulExp::MUL_UNARY_EXP;
-        mul_exp->unaryexp = unique_ptr<UnaryExp>((UnaryExp*) $3);
+    mul_exp->unaryexp = unique_ptr<UnaryExp>((UnaryExp*) $3);
     mul_exp->mulexp = unique_ptr<MulExp>((MulExp*) $1);
     mul_exp->op = '*';
     $$ = mul_exp;
 } | MulExp '/' UnaryExp {
     auto mul_exp = new MulExp();
     mul_exp->tag = MulExp::MUL_UNARY_EXP;
-        mul_exp->unaryexp = unique_ptr<UnaryExp>((UnaryExp*) $3);
+    mul_exp->unaryexp = unique_ptr<UnaryExp>((UnaryExp*) $3);
     mul_exp->mulexp = unique_ptr<MulExp>((MulExp*) $1);
     mul_exp->op = '/';
     $$ = mul_exp;
 } | MulExp '%' UnaryExp {
     auto mul_exp = new MulExp();
     mul_exp->tag = MulExp::MUL_UNARY_EXP;
-        mul_exp->unaryexp = unique_ptr<UnaryExp>((UnaryExp*) $3);
+    mul_exp->unaryexp = unique_ptr<UnaryExp>((UnaryExp*) $3);
     mul_exp->mulexp = unique_ptr<MulExp>((MulExp*) $1);
     mul_exp->op = '%';
     $$ = mul_exp;
@@ -535,16 +535,16 @@ EqExp : RelExp {
 } | EqExp EQUAL RelExp{
     auto eq_exp = new EqExp();
     eq_exp->tag = EqExp::EQ_REL_EXP;
-    eq_exp->relexp = unique_ptr<RelExp>((RelExp*) $1);
-    eq_exp->eqexp = unique_ptr<EqExp>((EqExp*) $3);
+    eq_exp->relexp = unique_ptr<RelExp>((RelExp*) $3);
+    eq_exp->eqexp = unique_ptr<EqExp>((EqExp*) $1);
     eq_exp->op[0] = '=';
     eq_exp->op[1] = '=';
     $$ = eq_exp;
 } | EqExp NOT_EQUAL RelExp{
     auto eq_exp = new EqExp();
     eq_exp->tag = EqExp::EQ_REL_EXP;
-    eq_exp->relexp = unique_ptr<RelExp>((RelExp*) $1);
-    eq_exp->eqexp = unique_ptr<EqExp>((EqExp*) $3);
+    eq_exp->relexp = unique_ptr<RelExp>((RelExp*) $3);
+    eq_exp->eqexp = unique_ptr<EqExp>((EqExp*) $1);
     eq_exp->op[0] = '!';
     eq_exp->op[1] = '=';
     $$ = eq_exp;

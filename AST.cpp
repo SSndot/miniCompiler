@@ -241,7 +241,8 @@ void UnaryExp::MyPrint(int indent) const{
     else if(tag==FUNC){
         printIndent(indent);
         cout<<"CALL "<<ident<<":\n";
-        funcrparams->MyPrint(indent+1);
+        if(funcrparams)
+            funcrparams->MyPrint(indent+1);
     }
     else {
         unaryop->MyPrint(indent);
@@ -305,7 +306,6 @@ void EqExp::MyPrint(int indent) const{
     else{
         printIndent(indent);
         if(op[0]!='\0')cout<<"EQ_OP: "<<string(op,2)<<"\n";
-        cout<<"ok!"<<"\n";
         if(eqexp)eqexp->MyPrint(indent+1);
         if(relexp)relexp->MyPrint(indent+1);
     }

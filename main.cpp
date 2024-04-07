@@ -23,8 +23,8 @@ int main(int argc, const char *argv[])
     unique_ptr<CompUnit> ast;
     auto ret = yyparse(base_ast);
     assert(!ret);
-    ast.reset((CompUnit *)base_ast.release());
-    ast->MyPrint(0);
+    // ast.reset((CompUnit *)base_ast.release());
+    // ast->MyPrint(0);
     std::cout << "End!" << std::endl;
     return 0;
 }
