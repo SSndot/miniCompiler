@@ -261,7 +261,7 @@ public:
 //关系表达式
 class RelExp:public AST{
 public:
-    enum TAG{ADDEXP,REL_ADD_EXP};
+    enum TAG{ADDEXP,REL_ADD_EXP,IDENT};
     TAG tag;
     unique_ptr<AddExp>addexp;
     unique_ptr<RelExp>relexp;
@@ -273,7 +273,7 @@ public:
 //相等性表达式
 class EqExp:public AST{
 public:
-    enum TAG{RELEXP,EQ_REL_EXP};
+    enum TAG{RELEXP,EQ_REL_EXP,IDENT};
     TAG tag;
     unique_ptr<RelExp> relexp;
     unique_ptr<EqExp> eqexp;
@@ -284,7 +284,7 @@ public:
 
 class LAndExp:public AST{
 public:
-    enum TAG{EQEXP,LAND_EQ_EXP};
+    enum TAG{EQEXP,LAND_EQ_EXP,IDENT};
     TAG tag;
     unique_ptr<EqExp> eqexp;
     unique_ptr<LAndExp> landexp;
@@ -295,7 +295,7 @@ public:
 //逻辑或表达式
 class LOrExp:public AST{
 public:
-    enum TAG {LANDEXP,LOR_LAND_EXP};
+    enum TAG {LANDEXP,LOR_LAND_EXP,IDENT};
     TAG tag;
     unique_ptr<LAndExp> landexp;
     unique_ptr<LOrExp> lorexp;

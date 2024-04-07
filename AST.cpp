@@ -77,12 +77,13 @@ void InitVal::MyPrint(int indent) const{
 
 void FuncDef::MyPrint(int indent) const{
     printIndent(indent);
-    cout << "FuncDef: {" << ident << "\n";
+    cout << "FuncDef: " <<ident<<"{\n";
+    printIndent(indent+1);
+    cout<<"FuncType: "<<functype<<"\n";
     // 假设FuncType总是从FuncDef开始的第一层
 // TODO
     // functype->MyPrint(indent+1);
-    printIndent(indent+1);
-    cout << ident << "\n";
+  
     if (funcfparams) {
         funcfparams->MyPrint(indent+1);
     }
@@ -100,6 +101,7 @@ void FuncFParams::MyPrint(int indent) const{
     printIndent(indent);
     cout<<"FuncFParams:"<<"\n";
     for (const auto& param : funcfparams) {
+    
         param->MyPrint(indent+1); // 增加缩进
     }
 }
@@ -153,7 +155,7 @@ void Stmt::MyPrint(int indent) const{
     }
     else if(tag==IF){
         printIndent(indent);
-        cout<<"IF_STMT:{\n";
+        cout<<"IF_Stmt:{\n";
 
         printIndent(indent+1);
         cout<<"IF:{\n";
@@ -197,7 +199,7 @@ void Exp::MyPrint(int indent) const{
 
 void LVal::MyPrint(int indent) const{
     printIndent(indent); // 假设已经有了这个辅助函数
-    cout << "LVal: " << ident<<"\n";
+    cout << "Ident: " << ident<<"\n";
     if (tag == ARRAY) {
         for (const auto& exp : exps) {
             printIndent(indent+1); 
@@ -210,6 +212,7 @@ void LVal::MyPrint(int indent) const{
 }
 
 void PrimaryExp::MyPrint(int indent) const{
+    cout<<"primaryexp: tag "<<tag<<"\n";
     if(tag==EXP){
         exp->MyPrint(indent);
     }
@@ -227,7 +230,12 @@ void Number::MyPrint(int indent) const{
 }
 
 void UnaryExp::MyPrint(int indent) const{
+    cout<<tag<<"\n";
     if(tag==PRIMARY_EXP){
+        cout<<"primary exp"<<"\n";
+        if(primaryexp==nullptr)cout<<"NULL"<<"\n";
+
+        cout<<primaryexp->tag<<"\n";
         primaryexp->MyPrint(indent);
     }
     else if(tag==FUNC){
@@ -260,9 +268,9 @@ void MulExp::MyPrint(int indent) const{
     }
     else{
         printIndent(indent);
-        cout<<"BINARY_OP: "<<op<<"\n";
-        mulexp->MyPrint(indent+1);
-        unaryexp->MyPrint(indent+1);
+        if(op!='\0')cout<<"BINARY_OP: "<<op<<"\n";
+        if(mulexp)mulexp->MyPrint(indent+1);
+        if(unaryexp)unaryexp->MyPrint(indent+1);
     }
 }
 
@@ -272,9 +280,9 @@ void AddExp::MyPrint(int indent) const{
     }
     else{
         printIndent(indent);
-        cout<<"BINARY_OP: "<<op<<"\n";
-        addexp->MyPrint(indent+1);
-        mulexp->MyPrint(indent+1);
+        if(op!='\0')cout<<"BINARY_OP: "<<op<<"\n";
+        if(addexp)addexp->MyPrint(indent+1);
+        if(mulexp)mulexp->MyPrint(indent+1);
     }
 }
 
@@ -284,9 +292,9 @@ void RelExp::MyPrint(int indent) const{
     }
     else{
         printIndent(indent);
-        cout<<"REL_OP: "<<string(op,2)<<"\n";
-        relexp->MyPrint(indent+1);
-        addexp->MyPrint(indent+1);
+        if(op[0]!='\0')cout<<"REL_OP: "<<string(op,2)<<"\n";
+        if(relexp)relexp->MyPrint(indent+1);
+        if(addexp)addexp->MyPrint(indent+1);
     }
 }
 
@@ -296,9 +304,10 @@ void EqExp::MyPrint(int indent) const{
     }
     else{
         printIndent(indent);
-        cout<<"EQ_OP: "<<string(op,2)<<"\n";
-        eqexp->MyPrint(indent+1);
-        relexp->MyPrint(indent+1);
+        if(op[0]!='\0')cout<<"EQ_OP: "<<string(op,2)<<"\n";
+        cout<<"ok!"<<"\n";
+        if(eqexp)eqexp->MyPrint(indent+1);
+        if(relexp)relexp->MyPrint(indent+1);
     }
 }
 
@@ -309,8 +318,8 @@ void LAndExp::MyPrint(int indent) const{
     else{
         printIndent(indent);
         cout<<"LAND_OP: &&\n";
-        landexp->MyPrint(indent+1);
-        eqexp->MyPrint(indent+1);
+        if(landexp)landexp->MyPrint(indent+1);
+        if(eqexp)eqexp->MyPrint(indent+1);
     }
 }
 
@@ -321,7 +330,7 @@ void LOrExp::MyPrint(int indent) const{
     else{
         printIndent(indent);
         cout<<"LAND_OP: &&\n";
-        landexp->MyPrint(indent+1);
-        lorexp->MyPrint(indent+1);
+        if(landexp)landexp->MyPrint(indent+1);
+        if(lorexp)lorexp->MyPrint(indent+1);
     }
 }
