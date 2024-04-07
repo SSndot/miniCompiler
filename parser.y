@@ -114,13 +114,24 @@ VarDef : IDENT '=' InitVal {
     var_def->ident = *unique_ptr<string>($1);
     var_def->initval = unique_ptr<InitVal>((InitVal*) $3);
     $$ = var_def;
-} | IDENT IntConstList {
+} | IDENT {
     auto var_def = new VarDef();
+    var_def->tag = VarDef::VARIABLE;
+    var_def->ident = *unique_ptr<string>($1);
+    $$ = var_def;
+} | IDENT '[' INT_CONST ']' IntConstList {
+    auto var_def = new VarDef();
+    auto temp_list = new IntConstList();
+    auto int_const_list = unique_ptr<IntConstList>((IntConstList*) $5);
+    temp_list->list.emplace_back((int) $3);
+    for(int i = 0; i < int_const_list->list.size(); ++i){
+        temp_list->list.emplace_back(int_const_list->list[i]);
+    }
     var_def->tag = VarDef::ARRAY;
     var_def->ident = *unique_ptr<string>($1);
-    var_def->int_consts = unique_ptr<IntConstList>((IntConstList*) $2);
+    var_def->int_consts = unique_ptr<IntConstList>((IntConstList*) temp_list);
     $$ = var_def;
-};
+}; 
 
 // {'[' INT_CONST ']'}
 IntConstList : '[' INT_CONST ']' IntConstList {
