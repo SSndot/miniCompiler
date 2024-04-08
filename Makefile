@@ -5,7 +5,7 @@ CXXFLAGS := -std=c++11
 
 TARGET := compiler
 
-SRCS := parser.cpp lexer.cpp main.cpp
+SRCS := parser.cpp lexer.cpp main.cpp AST.cpp
 
 OBJS := $(SRCS:.cpp=.o)
 

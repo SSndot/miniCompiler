@@ -5,8 +5,8 @@
 #include <memory>
 #include <string>
 #include <cstring>
-// #include "AST.h"
-#include "AST.cpp"
+#include "AST.h"
+// #include "AST.cpp"
 using namespace std;
 extern FILE *yyin;
 extern int yyparse(unique_ptr<AST> &ast);
