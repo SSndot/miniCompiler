@@ -58,7 +58,7 @@ void VarDef::MyPrint(int indent) const{
     }
     else{
         cout<<"ARRAY "<<ident;
-        int_consts->MyPrint(indent);
+        if(int_consts)int_consts->MyPrint(indent);
     }
 }
 
@@ -81,7 +81,7 @@ void FuncDef::MyPrint(int indent) const{
     if (funcfparams) {
         funcfparams->MyPrint(indent+1);
     }
-    block->MyPrint(indent+1);
+    if(block)block->MyPrint(indent+1);
     printIndent(indent);
     cout<<"}\n";
 }
@@ -145,7 +145,7 @@ void Stmt::MyPrint(int indent) const{
         exp->MyPrint(indent);
     }
     else if(tag==BLOCK){
-        block->MyPrint(indent);
+        if(block)block->MyPrint(indent);
     }
     else if(tag==IF){
         printIndent(indent);
@@ -183,7 +183,7 @@ void Stmt::MyPrint(int indent) const{
     else {
         printIndent(indent);
         cout<<"RETURN:\n";
-        exp->MyPrint(indent+1);
+        if(exp)exp->MyPrint(indent+1);
     }
     
 }
@@ -195,12 +195,15 @@ void LVal::MyPrint(int indent) const{
     printIndent(indent); // 假设已经有了这个辅助函数
     cout << "Ident: " << ident<<"\n";
     if (tag == ARRAY) {
-        for (const auto& exp : exps) {
-            printIndent(indent+1); 
-            cout << "[\n";
-            exp->MyPrint(indent+1); // 假设Exp也实现了MyPrint方法，不增加额外缩进
-            printIndent(indent+1); 
-            cout << "]\n";
+        
+        if(!exps.empty()){
+            for (const auto& exp : exps) {
+                printIndent(indent+1); 
+                cout << "[\n";
+                exp->MyPrint(indent+1); // 假设Exp也实现了MyPrint方法，不增加额外缩进
+                printIndent(indent+1); 
+                cout << "]\n";
+            }
         }
     }
 }
