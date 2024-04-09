@@ -28,7 +28,18 @@
 ```bash
 mkdir build && cd build && cmake .. && make
 ```
-
+之后，只需要执行以下命令即可重新构建项目：
+```bash
+cd build && make
+```
+清理项目时，执行以下命令：
+```bash
+cd build && make clean
+```
+或者全部清除
+```bash
+rm -rf build
+```
 执行测试时，在tests目录下执行以下命令：
 ```bash
 Python3 test.py ../build/compiler lab<lab_num>
