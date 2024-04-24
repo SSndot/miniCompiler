@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "SymbolTable.h"
 using namespace std;
 
 class AST;
@@ -64,15 +65,8 @@ public:
     vector<unique_ptr<Decl>> decls;
     vector<unique_ptr<FuncDef>> funcdefs;
     void MyPrint(int indent) const;
+    void Check();
 };
-
-// //基本类型  只有int
-// class BType:public AST{
-// public:
-//     enum TAG {INT};
-//     TAG tag;
-//     void MyPrint(int indent) const;
-// };
 
 // 声明
 class Decl : public AST
@@ -80,6 +74,7 @@ class Decl : public AST
 public:
     unique_ptr<VarDecl> vardecl;
     void MyPrint(int indent) const;
+    void Check();
 };
 
 class VarDecl : public AST
@@ -88,6 +83,7 @@ public:
     vector<unique_ptr<VarDef>> vardefs;
     string btype;
     void MyPrint(int indent) const;
+    void Check();
 };
 
 // 变量定义
@@ -104,6 +100,7 @@ public:
     unique_ptr<InitVal> initval; // 若为空说明没有初始值
     unique_ptr<IntConstList> int_consts;
     void MyPrint(int indent) const;
+    void Check();
 };
 
 // 变量初值
@@ -112,6 +109,7 @@ class InitVal : public AST
 public:
     unique_ptr<Exp> exp;
     void MyPrint(int indent) const;
+    MyType Check();
 };
 
 // 函数定义
@@ -123,15 +121,8 @@ public:
     unique_ptr<FuncFParams> funcfparams;
     unique_ptr<Block> block;
     void MyPrint(int indent) const;
+    MyType Check();
 };
-
-// //函数类型
-// class FuncType:public AST{
-// public:
-//     enum TAG{VOID,INT};
-//     TAG tag;
-//     void MyPrint(int indent) const;
-// };
 
 // 函数形参
 class FuncFParams : public AST
@@ -139,6 +130,7 @@ class FuncFParams : public AST
 public:
     vector<unique_ptr<FuncFParam>> funcfparams;
     void MyPrint(int indent) const;
+    void Check();
 };
 
 class FuncFParam : public AST
@@ -155,6 +147,7 @@ public:
     unique_ptr<IntConstList> int_consts;
 
     void MyPrint(int indent) const;
+    void Check();
 };
 
 // 函数体
@@ -163,6 +156,7 @@ class Block : public AST
 public:
     vector<unique_ptr<BlockItem>> blockitems;
     void MyPrint(int indent) const;
+    MyType Check(bool if_func);
 };
 
 // 语句块项
@@ -178,6 +172,7 @@ public:
     unique_ptr<Decl> decl;
     unique_ptr<Stmt> stmt;
     void MyPrint(int indent) const;
+    MyType Check();
 };
 
 // 语句
@@ -203,6 +198,7 @@ public:
     unique_ptr<Stmt> else_stmt;
     unique_ptr<Stmt> while_stmt;
     void MyPrint(int indent) const;
+    MyType Check(bool is_if);
 };
 
 // 表达式
@@ -211,6 +207,7 @@ class Exp : public AST
 public:
     unique_ptr<LOrExp> lorexp;
     void MyPrint(int indent) const;
+    MyType Check(bool is_func_r_param);
 };
 
 class LVal : public AST
@@ -225,6 +222,7 @@ public:
     string ident;
     vector<unique_ptr<Exp>> exps;
     void MyPrint(int indent) const;
+    MyType Check(bool is_func_r_param);
 };
 
 // 基本表达式
@@ -242,7 +240,9 @@ public:
     unique_ptr<LVal> lval;
     unique_ptr<Number> number;
     void MyPrint(int indent) const;
+    MyType Check(bool is_func_r_param);
 };
+
 class Number : public AST
 {
 public:
@@ -267,6 +267,7 @@ public:
     unique_ptr<UnaryOp> unaryop;
     unique_ptr<UnaryExp> unaryexp;
     void MyPrint(int indent) const;
+    MyType Check(bool is_func_r_param);     
 };
 
 class UnaryOp : public AST
@@ -297,6 +298,7 @@ public:
     unique_ptr<MulExp> mulexp;
     char op;
     void MyPrint(int indent) const;
+    MyType Check(bool is_func_r_param); 
 };
 
 // 加减表达式
@@ -313,6 +315,7 @@ public:
     unique_ptr<AddExp> addexp;
     char op;
     void MyPrint(int indent) const;
+    MyType Check(bool is_func_r_param);   
 };
 // 关系表达式
 class RelExp : public AST
@@ -329,6 +332,7 @@ public:
     unique_ptr<RelExp> relexp;
     char op[2];
     void MyPrint(int indent) const;
+    MyType Check(bool is_func_r_param);
 };
 
 // 相等性表达式
@@ -346,6 +350,7 @@ public:
     unique_ptr<EqExp> eqexp;
     char op[2];
     void MyPrint(int indent) const;
+    MyType Check(bool is_func_r_param);
 };
 
 class LAndExp : public AST
@@ -361,6 +366,7 @@ public:
     unique_ptr<EqExp> eqexp;
     unique_ptr<LAndExp> landexp;
     void MyPrint(int indent) const;
+    MyType Check(bool is_func_r_param);
 };
 
 // 逻辑或表达式
@@ -377,4 +383,5 @@ public:
     unique_ptr<LAndExp> landexp;
     unique_ptr<LOrExp> lorexp;
     void MyPrint(int indent) const;
+    MyType Check(bool is_func_r_param);
 };
