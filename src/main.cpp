@@ -22,11 +22,11 @@ int main(int argc, const char *argv[])
     assert(yyin);
     unique_ptr<AST> base_ast;
     unique_ptr<CompUnit> ast;
-    // ast.reset((CompUnit *)base_ast.release());
     auto ret = yyparse(base_ast);
     assert(!ret);
     ast.reset((CompUnit *)base_ast.release());
     ast->MyPrint(0);
+    ast->Check();
     std::cout << "End!" << std::endl;
     return 0;
 }

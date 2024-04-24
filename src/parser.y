@@ -131,7 +131,7 @@ VarDef : IDENT ASSIGN InitVal {
     auto temp_list = new IntConstList();
     auto int_const_list = unique_ptr<IntConstList>((IntConstList*) $5);
     temp_list->list.emplace_back((int) $3);
-    for(int i = 0; i < int_const_list->list.size(); ++i){
+    for(size_t i = 0; i < int_const_list->list.size(); ++i){
         temp_list->list.emplace_back(int_const_list->list[i]);
     }
     var_def->tag = VarDef::ARRAY;
@@ -145,7 +145,7 @@ IntConstList : LBRACKET INT_CONST RBRACKET IntConstList {
     auto int_const_list = new IntConstList();
     auto int_const_list_it = unique_ptr<IntConstList>((IntConstList*) $4);
     int_const_list->list.emplace_back((int) $2);
-    for(int i = 0; i < int_const_list_it->list.size(); ++i){
+    for(size_t i = 0; i < int_const_list_it->list.size(); ++i){
         int_const_list->list.emplace_back(int_const_list_it->list[i]);
     }
     $$ = int_const_list;
@@ -338,7 +338,7 @@ LVal : IDENT {
 } | IDENT LBRACKET Exp RBRACKET ExpList {
     auto lval = new LVal();
     auto exp_list = unique_ptr<LVal>((LVal*) $5);
-    lval->tag = LVal::VARIABLE;
+    lval->tag = LVal::ARRAY;
     lval->ident = *unique_ptr<string>($1);
     lval->exps.emplace_back((Exp*) $3);
     for(auto &it : exp_list->exps){
