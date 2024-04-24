@@ -35,14 +35,14 @@ Symbol VariableTable::lookup(const string &ident){
 }
 
 void FuncTable::insertFUNC(const string& ident,int t){
-    MyType t=MyType(t);
-    Symbol s=Symbol(t,ident);
+    MyType t1=MyType(t);
+    Symbol s=Symbol(t1,ident);
     table.insert({ident,s});
 }
 
 void FuncTable::insertFUNC_Param(const string& ident,int t , vector<MyType> params){
-    MyType t=MyType(t);
-    Symbol s=Symbol(t,ident,params);
+    MyType t1=MyType(t);
+    Symbol s=Symbol(t1,ident,params);
     table.insert({ident,s});
 }
 
@@ -123,3 +123,12 @@ vector<MyType> FuncStack::getParamsType(const string& ident){
     return s.params;
     
 }
+
+MyType::~MyType() {
+}
+Symbol::~Symbol() {
+}
+VariableTable::~VariableTable() {
+}
+
+
