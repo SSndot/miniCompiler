@@ -12,10 +12,29 @@ void CompUnit::Check(){
     }
 
     // 加入函数
+    /* void putint(int) */
     vector<MyType> param_type;
     param_type.emplace_back(MyType(MyType::INT));
     fs.insertFUNC_param("putint", 0, param_type);
+    /* void putch(int) */
+    fs.insertFUNC_param("putch", 0, param_type);
+    /* void putarray(int, int[]) */
+    param_type.clear();
+    param_type.emplace_back(MyType(MyType::INT));
+    param_type.emplace_back(MyType(MyType::ARRAY, 1));
+    fs.insertFUNC_param("putarray", 0, param_type);
+    /* int getint() */
     fs.insertFUNC("getint", 1);
+    /* int getch() */
+    fs.insertFUNC("getch", 1);
+    /* int getarray(int[]) */
+    param_type.clear();
+    param_type.emplace_back(MyType(MyType::ARRAY, 1));
+    fs.insertFUNC_param("getarray", 1, param_type);
+    /* void starttime() */
+    fs.insertFUNC("starttime", 0);
+    /* void stoptime() */
+    fs.insertFUNC("stoptime", 0);    
 
     // 检查函数
     for(auto &f : funcdefs)
@@ -436,7 +455,9 @@ try{
     }
     MyType res_ty = (block == nullptr) ? MyType(MyType::EMPTY): block->Check(true); 
     //ERROR return 语句的返回类型与函数定义的返回类型不匹配
-    if((functype == "void" && (res_ty.type != MyType::VOID && res_ty.type != MyType::EMPTY)) || (functype == "int" && res_ty.type != MyType::INT))
+    if((functype == "void" && (res_ty.type != MyType::VOID && res_ty.type != MyType::EMPTY)))
+        throw "The return type of the return statement does not match the return type defined by the func.";
+    if((functype == "int" && res_ty.type != MyType::INT && ident != "main") || (functype == "int" && (res_ty.type == MyType::ARRAY || res_ty.type == MyType::VOID) && ident == "main"))
         throw "The return type of the return statement does not match the return type defined by the func.";
     vs.EndScope();
     return res_ty;
